@@ -4,4 +4,40 @@ version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.14"
-dependencies = []
+dependencies = [
+    "fastapi>=0.141.1",
+    "fastapi-cli>=0.0.32",
+]
+
+[dependency-groups]
+dev = [
+    "ruff",
+]
+
+[tool.fastapi]
+entrypoint = "src.main:app"
+
+[tool.uv]
+package = false
+
+[tool.ruff]
+line-length = 100
+target-version = "py314"
+
+[tool.ruff.lint]
+extend-select = ["I"]
+select = [
+    "E",
+    "W",
+    "F",
+    "I",
+    "N",
+    "UP",
+    "B",
+    "C4",
+]
+
+ignore = []
+
+[tool.ruff.lint.isort]
+known-first-party = ["src"]
