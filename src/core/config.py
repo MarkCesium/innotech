@@ -28,6 +28,15 @@ class JWTConfig(BaseModel):
     refresh_token_expire_days: int = 30
 
 
+class SMTPConfig(BaseModel):
+    from_email: str
+    host: str
+    port: int
+    user: str
+    password: str
+    use_tls: bool = Field(default=False)
+
+
 class AppConfig(BaseModel):
     allowed_origins: list[str] = Field(default=["http://localhost:8000"])
 
@@ -36,6 +45,7 @@ class Settings(BaseSettings):
     app: AppConfig = Field(...)
     db: PostgresConfig = Field(...)
     jwt: JWTConfig = Field(...)
+    smtp: SMTPConfig = Field(...)
 
     model_config = SettingsConfigDict(
         env_file=BASE_DIR / ".env",
