@@ -21,6 +21,13 @@ class PostgresConfig(BaseModel):
         return self.dsn.unicode_string()
 
 
+class JWTConfig(BaseModel):
+    secret: str
+    algorithm: str = "HS256"
+    access_token_expire_minutes: int = 15
+    refresh_token_expire_days: int = 30
+
+
 class AppConfig(BaseModel):
     allowed_origins: list[str] = Field(default=["http://localhost:8000"])
 
@@ -28,6 +35,7 @@ class AppConfig(BaseModel):
 class Settings(BaseSettings):
     app: AppConfig = Field(...)
     db: PostgresConfig = Field(...)
+    jwt: JWTConfig = Field(...)
 
     model_config = SettingsConfigDict(
         env_file=BASE_DIR / ".env",
