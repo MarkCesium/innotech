@@ -20,4 +20,14 @@ async_session_factory = async_sessionmaker[AsyncSession](
 )
 
 
+async def get_session():
+    async with async_session_factory() as session:
+        try:
+            yield session
+            await session.commit()
+        except Exception:
+            await session.rollback()
+            raise
+
+
 class BaseModel(DeclarativeBase): ...
