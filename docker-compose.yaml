@@ -16,7 +16,6 @@ services:
       - auth_net
     volumes:
       - ./var/postgresql:/var/lib/postgresql/data
-      - ./config/postgres-init:/docker-entrypoint-initdb.d
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${DB__USER} -d ${DB__NAME}"]
       interval: 10s
