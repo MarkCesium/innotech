@@ -1,0 +1,44 @@
+services:
+  auth:
+    networks:
+      - auth_net
+    ports:
+      - 8000:8000
+
+  database:
+    image: postgres:17-bookworm
+    container_name: auth_db
+    environment:
+      POSTGRES_USER: ${DB__USER}
+      POSTGRES_PASSWORD: ${DB__PASSWORD}
+      POSTGRES_DB: ${DB__NAME}
+    networks:
+      - auth_net
+    volumes:
+      - ./var/postgresql:/var/lib/postgresql/data
+      - ./config/postgres-init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB__USER} -d ${DB__NAME}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  mailpit:
+    networks:
+      - auth_net
+    image: axllent/mailpit
+    container_name: auth_mailpit
+    volumes:
+      - ./var/mailpit:/data
+    ports:
+      - 8025:8025
+    environment:
+      MP_MAX_MESSAGES: 5000
+      MP_DATABASE: /data/mailpit.db
+      MP_SMTP_AUTH_ACCEPT_ANY: 1
+      MP_SMTP_AUTH_ALLOW_INSECURE: 1
+
+networks:
+  auth_net:
+    name: auth_net
+    driver: bridge
