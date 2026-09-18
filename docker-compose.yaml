@@ -1,5 +1,8 @@
 services:
   auth:
+    depends_on:
+      - database
+      - mailpit
     networks:
       - auth_net
     ports:
