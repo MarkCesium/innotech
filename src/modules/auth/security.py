@@ -8,6 +8,8 @@ from pwdlib.hashers.argon2 import Argon2Hasher
 
 from src.core.config import JWTConfig
 
+from .exceptions import InvalidTokenError
+
 password_hash = PasswordHash((Argon2Hasher(),))
 
 
@@ -49,19 +51,20 @@ def create_verification_token(user_id: str, config: JWTConfig) -> str:
 
 
 def decode_token(token: str, expected_type: str, config: JWTConfig) -> dict[str, Any]:
-    payload = jwt.decode(
-        token,
-        config.secret,
-        algorithms=[config.algorithm],
-        options={
-            "verify_signature": True,
-            "require": ["exp", "sub", "type"],
-        },
-    )
+    try:
+        payload = jwt.decode(
+            token,
+            config.secret,
+            algorithms=[config.algorithm],
+            options={
+                "verify_signature": True,
+                "require": ["exp", "sub", "type"],
+            },
+        )
+    except jwt.PyJWTError as e:
+        raise InvalidTokenError() from e
 
     if payload.get("type") != expected_type:
-        raise jwt.InvalidTokenError(
-            f"Expected '{expected_type}' token, got '{payload.get('type')}'"
-        )
+        raise InvalidTokenError(detail=f"Expected '{expected_type}' token")
 
     return payload

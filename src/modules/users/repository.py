@@ -27,7 +27,7 @@ async def create_user(session: AsyncSession, **kwargs):
         await session.flush()
     except IntegrityError as e:
         if "unique constraint" in str(e).lower():
-            raise UserAlreadyExistsError("User with this email already exists") from e
+            raise UserAlreadyExistsError() from e
         raise
     await session.refresh(user)
     return user
