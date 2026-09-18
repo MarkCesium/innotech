@@ -4,7 +4,7 @@ from src.core.dependencies import SettingsDep
 from src.modules.notifications.service import send_verification_email
 
 from .dependencies import AuthServiceDep
-from .schemas import ReadUser, RegisterUser
+from .schemas import ReadUser, RegisterUser, Token
 
 router = APIRouter(prefix="/auth")
 
@@ -24,4 +24,6 @@ async def register_user(
 
 
 @router.get("/verify-email", name="verify_email")
-async def verify_email(token: str, auth_service: AuthServiceDep): ...
+async def verify_email(token: str, auth_service: AuthServiceDep) -> Token:
+    token = await auth_service.verify_email(token)
+    return Token(access_token=token, token_type="bearer")
