@@ -1,4 +1,5 @@
 from typing import Annotated
+from uuid import UUID
 
 import jwt
 from fastapi import Depends, HTTPException, status
@@ -14,10 +15,10 @@ from .service import AuthService
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/token")
 
 
-def get_current_user_id(token: str, config: JWTConfig) -> str:
+def get_current_user_id(token: Annotated[str, Depends(oauth2_scheme)], config: JWTConfig) -> UUID:
     try:
         payload = decode_token(token, expected_type="access", config=config)
-        return payload["sub"]
+        return UUID(payload["sub"])
     except jwt.InvalidTokenError as e:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
