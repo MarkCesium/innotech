@@ -32,8 +32,8 @@ class SMTPConfig(BaseModel):
     from_email: str
     host: str
     port: int
-    user: str
-    password: str
+    user: str | None = Field(default=None)
+    password: str | None = Field(default=None)
     use_tls: bool = Field(default=False)
 
 
