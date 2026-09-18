@@ -1,7 +1,7 @@
 from uuid import UUID
 
 from .models import User
-from .repository import create_user, find_user_or_none, update_user
+from .repository import activate_user, create_user, find_user_or_none
 
 
 class UserService:
@@ -15,4 +15,4 @@ class UserService:
         return await create_user(self.session, email=email, hashed_password=hashed_password)
 
     async def activate_user(self, id: UUID) -> None:
-        await update_user(self.session, id, is_active=True)
+        await activate_user(self.session, id)

@@ -1,11 +1,12 @@
+from typing import cast
 from uuid import UUID
 
-from sqlalchemy import select
+from sqlalchemy import CursorResult, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql import update
 
-from .exceptions import UserAlreadyExistsError
+from .exceptions import UserAlreadyActivatedOrNotFoundError, UserAlreadyExistsError
 from .models import User
 
 
@@ -32,6 +33,17 @@ async def create_user(session: AsyncSession, **kwargs):
     return user
 
 
-async def update_user(session: AsyncSession, id: UUID, **kwargs) -> None:
-    statement = update(User).where(User.id == id).values(**kwargs)
-    await session.execute(statement)
+async def activate_user(session: AsyncSession, id: UUID) -> None:
+    statement = (
+        update(User)
+        .where(
+            User.id == id,
+            User.is_active.is_(False),
+        )
+        .values(is_active=True)
+    )
+
+    result = await session.execute(statement)
+    cursor_result = cast(CursorResult[tuple[User]], result)
+    if cursor_result.rowcount == 0:
+        raise UserAlreadyActivatedOrNotFoundError()
