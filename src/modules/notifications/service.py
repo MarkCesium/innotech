@@ -2,7 +2,7 @@ from email.message import EmailMessage
 
 import aiosmtplib
 
-from core.config import SMTPConfig
+from src.core.config import SMTPConfig
 
 
 async def send_verification_email(to_email: str, link: str, config: SMTPConfig) -> None:
