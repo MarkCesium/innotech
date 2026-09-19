@@ -1,8 +1,10 @@
 services:
   auth:
     depends_on:
-      - database
-      - mailpit
+      database:
+        condition: service_healthy
+      mailpit:
+        condition: service_started
     networks:
       - auth_net
     ports:
