@@ -1,7 +1,7 @@
 from typing import Protocol
 
 from src.core.config import JWTConfig
-from src.modules.users.models import User
+from src.modules.users.schemas import UserDTO
 from src.modules.users.service import UserService
 
 from .security import create_access_token, create_verification_token, decode_token, hash_password
@@ -17,7 +17,7 @@ class AuthService:
         self.jwt_config = jwt_config
         self.email_sender = email_sender
 
-    async def register_user(self, email: str, password: str) -> User:
+    async def register_user(self, email: str, password: str) -> UserDTO:
         hashed_password = await hash_password(password)
         user = await self.users.create_user(email, hashed_password)
         token = create_verification_token(user.id.hex, self.jwt_config)

@@ -10,18 +10,14 @@ from .exceptions import UserAlreadyActivatedOrNotFoundError, UserAlreadyExistsEr
 from .models import User
 
 
-async def get_user_by_id(session: AsyncSession, id: UUID) -> User | None:
-    return await session.get(User, id)
-
-
-async def find_user_or_none(session: AsyncSession, **filter_by) -> User | None:
-    statement = select(User).filter_by(**filter_by)
+async def find_user_by_email(session: AsyncSession, email: str) -> User | None:
+    statement = select(User).filter_by(email=email)
     result = await session.execute(statement)
     return result.scalar_one_or_none()
 
 
-async def create_user(session: AsyncSession, **kwargs):
-    user = User(**kwargs)
+async def create_user(session: AsyncSession, email: str, hashed_password: str) -> User:
+    user = User(email=email, hashed_password=hashed_password)
     session.add(user)
     try:
         await session.flush()
@@ -29,7 +25,7 @@ async def create_user(session: AsyncSession, **kwargs):
         if "unique constraint" in str(e).lower():
             raise UserAlreadyExistsError() from e
         raise
-    await session.refresh(user)
+    # await session.refresh(user)
     return user
 
 
