@@ -1,12 +1,11 @@
 from fastapi import APIRouter
 
-from src.modules.users.openapi import (
+from .dependencies import AuthServiceDep
+from .openapi import (
+    UNAUTHORIZED_RESPONSE,
     USER_ALREADY_ACTIVATED_OR_NOT_FOUND_RESPONSE,
     USER_ALREADY_EXISTS_RESPONSE,
 )
-
-from .dependencies import AuthServiceDep
-from .openapi import UNAUTHORIZED_RESPONSE
 from .schemas import ReadUser, RegisterUser, Token
 
 router = APIRouter(prefix="/auth")
