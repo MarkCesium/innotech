@@ -1,0 +1,11 @@
+services:
+  migrator:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+  auth:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always

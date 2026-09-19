@@ -1,10 +1,22 @@
 services:
-  auth:
+  migrator:
+    command: ["alembic", "upgrade", "head"]
+    networks:
+      - auth_net
+    env_file:
+      - .env
     depends_on:
       database:
         condition: service_healthy
+
+  auth:
+    depends_on:
+      migrator:
+        condition: service_completed_successfully
       mailpit:
         condition: service_started
+    env_file:
+      - .env
     networks:
       - auth_net
     ports:
@@ -24,7 +36,7 @@ services:
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${DB__USER} -d ${DB__NAME}"]
       interval: 10s
-      timeout: 5s
+      timeout: 1s
       retries: 5
 
   mailpit:

@@ -1,8 +1,16 @@
 services:
+  migrator:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: dev
+    volumes:
+      - ./src:/app/src
+      - ./migrations:/app/migrations
+      - ./alembic.ini:/app/alembic.ini
   database:
     ports:
       - "5432:5432"
-
   auth:
     build:
       context: .
@@ -12,4 +20,3 @@ services:
       - "8000:8000"
     volumes:
       - ./src:/app/src
-      - ./var/backend:/app/var/app

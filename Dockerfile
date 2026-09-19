@@ -46,6 +46,9 @@ WORKDIR /app
 
 COPY --from=builder-prod --chown=nonroot:nonroot /app/.venv /app/.venv
 COPY --from=builder-prod --chown=nonroot:nonroot /app/src /app/src
+COPY --from=builder-prod --chown=nonroot:nonroot /app/migrations /app/migrations
+COPY --from=builder-prod --chown=nonroot:nonroot /app/alembic.ini /app/alembic.ini
+COPY --from=builder-prod --chown=nonroot:nonroot /app/pyproject.toml /app/pyproject.toml
 
 ENV PATH="/app/.venv/bin:$PATH"
 
