@@ -1,7 +1,5 @@
-from fastapi import APIRouter, BackgroundTasks, Request
+from fastapi import APIRouter
 
-from src.core.dependencies import SettingsDep
-from src.modules.notifications.service import send_verification_email
 from src.modules.users.openapi import (
     USER_ALREADY_ACTIVATED_OR_NOT_FOUND_RESPONSE,
     USER_ALREADY_EXISTS_RESPONSE,
@@ -22,13 +20,8 @@ router = APIRouter(prefix="/auth")
 async def register_user(
     data: RegisterUser,
     auth_service: AuthServiceDep,
-    settings: SettingsDep,
-    request: Request,
-    bg_tasks: BackgroundTasks,
 ):
-    user, token = await auth_service.register_user(data.email, data.password)
-    verification_url = request.url_for("verify_email").include_query_params(token=token)
-    bg_tasks.add_task(send_verification_email, user.email, str(verification_url), settings.smtp)
+    user = await auth_service.register_user(data.email, data.password)
     return user
 
 

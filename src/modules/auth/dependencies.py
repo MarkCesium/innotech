@@ -1,10 +1,11 @@
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import Depends
+from fastapi import BackgroundTasks, Depends
 from fastapi.security import OAuth2PasswordBearer
 
 from src.core.dependencies import SettingsDep
+from src.modules.notifications.adapters import FastAPIEmailSender
 from src.modules.users.dependencies import UserServiceDep
 
 from .security import decode_token
@@ -20,8 +21,13 @@ def get_current_user_id(
     return user_id
 
 
-def get_auth_service(user_service: UserServiceDep, settings: SettingsDep) -> AuthService:
-    return AuthService(user_service, settings.jwt)
+def get_auth_service(
+    user_service: UserServiceDep,
+    settings: SettingsDep,
+    bg_tasks: BackgroundTasks,
+) -> AuthService:
+    email_sender = FastAPIEmailSender(bg_tasks, settings.app, settings.smtp)
+    return AuthService(user_service, settings.jwt, email_sender)
 
 
 AuthenticatedUserID = Annotated[UUID, Depends(get_current_user_id)]

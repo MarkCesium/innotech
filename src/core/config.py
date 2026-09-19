@@ -38,6 +38,7 @@ class SMTPConfig(BaseModel):
 
 
 class AppConfig(BaseModel):
+    base_url: str = Field(default="http://localhost:8000")
     allowed_origins: list[str] = Field(default=["http://localhost:8000"])
 
 
