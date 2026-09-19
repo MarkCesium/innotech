@@ -6,8 +6,8 @@ from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
-from src.core.config import settings
-from src.core.db import BaseModel  # noqa: F401
+from src.core.config import DatabaseSettings
+from src.core.db import BaseModel
 from src.modules.users.models import User  # noqa: F401
 
 # this is the Alembic Config object, which provides
@@ -30,7 +30,8 @@ target_metadata = BaseModel.metadata
 # can be acquired:
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
-config.set_main_option("sqlalchemy.url", settings.db.url)
+db_settings = DatabaseSettings()  # type: ignore[call-arg]
+config.set_main_option("sqlalchemy.url", db_settings.db.url)
 
 
 def run_migrations_offline() -> None:

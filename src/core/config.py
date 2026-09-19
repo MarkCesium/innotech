@@ -41,6 +41,17 @@ class AppConfig(BaseModel):
     allowed_origins: list[str] = Field(default=["http://localhost:8000"])
 
 
+class DatabaseSettings(BaseSettings):
+    db: PostgresConfig = Field(...)
+
+    model_config = SettingsConfigDict(
+        env_file=BASE_DIR / ".env",
+        env_file_encoding="utf-8",
+        env_nested_delimiter="__",
+        extra="ignore",
+    )
+
+
 class Settings(BaseSettings):
     app: AppConfig = Field(...)
     db: PostgresConfig = Field(...)
@@ -57,6 +68,3 @@ class Settings(BaseSettings):
 @lru_cache
 def get_settings() -> Settings:
     return Settings()  # type: ignore[call-arg]
-
-
-settings = get_settings()
