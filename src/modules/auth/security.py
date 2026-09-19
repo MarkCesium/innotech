@@ -1,6 +1,6 @@
 import asyncio
 from datetime import UTC, datetime, timedelta
-from typing import Any
+from uuid import UUID
 
 import jwt
 from pwdlib import PasswordHash
@@ -50,7 +50,7 @@ def create_verification_token(user_id: str, config: JWTConfig) -> str:
     )
 
 
-def decode_token(token: str, expected_type: str, config: JWTConfig) -> dict[str, Any]:
+def decode_token(token: str, expected_type: str, config: JWTConfig) -> UUID:
     try:
         payload = jwt.decode(
             token,
@@ -61,10 +61,11 @@ def decode_token(token: str, expected_type: str, config: JWTConfig) -> dict[str,
                 "require": ["exp", "sub", "type"],
             },
         )
-    except jwt.PyJWTError as e:
+        user_id = UUID(payload.get("sub"))
+    except (jwt.PyJWTError, ValueError) as e:
         raise InvalidTokenError() from e
 
     if payload.get("type") != expected_type:
         raise InvalidTokenError(detail=f"Expected '{expected_type}' token")
 
-    return payload
+    return user_id

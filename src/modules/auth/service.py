@@ -1,5 +1,3 @@
-from uuid import UUID
-
 from src.core.config import JWTConfig
 from src.modules.users.models import User
 from src.modules.users.service import UserService
@@ -19,7 +17,6 @@ class AuthService:
         return user, token
 
     async def verify_email(self, token: str) -> str:
-        payload = decode_token(token, "verification", self.jwt_config)
-        user_id = UUID(payload["sub"])
+        user_id = decode_token(token, "verification", self.jwt_config)
         await self.users.activate_user(user_id)
         return create_access_token(user_id.hex, self.jwt_config)
