@@ -1,24 +1,11 @@
-import asyncio
 from datetime import UTC, datetime, timedelta
 from uuid import UUID
 
 import jwt
-from pwdlib import PasswordHash
-from pwdlib.hashers.argon2 import Argon2Hasher
 
 from src.core.config import JWTConfig
 
 from .exceptions import InvalidTokenError
-
-password_hash = PasswordHash((Argon2Hasher(),))
-
-
-async def hash_password(password: str) -> str:
-    return await asyncio.to_thread(password_hash.hash, password)
-
-
-async def verify_password(plain_password: str, hashed_password: str) -> bool:
-    return await asyncio.to_thread(password_hash.verify, plain_password, hashed_password)
 
 
 def _create_token(user_id: str, token_type: str, expire_delta: timedelta, config: JWTConfig) -> str:

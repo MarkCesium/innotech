@@ -7,6 +7,20 @@ UNAUTHORIZED_RESPONSE = {
     }
 }
 
+INVALID_CREDENTIALS_RESPONSE = {
+    401: {
+        "model": ErrorResponse,
+        "description": "Incorrect email or password",
+    }
+}
+
+NOT_ACTIVATED_RESPONSE = {
+    403: {
+        "model": ErrorResponse,
+        "description": "Email is not verified",
+    }
+}
+
 USER_ALREADY_EXISTS_RESPONSE = {
     409: {
         "model": ErrorResponse,

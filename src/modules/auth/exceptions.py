@@ -10,3 +10,17 @@ class InvalidTokenError(BaseAppError):
             detail=detail,
             headers={"WWW-Authenticate": "Bearer"},
         )
+
+
+class InvalidCredentialsError(BaseAppError):
+    def __init__(self, detail: str = "Incorrect email or password"):
+        super().__init__(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=detail,
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+
+class AccountNotActivatedError(BaseAppError):
+    def __init__(self, detail: str = "Email is not verified"):
+        super().__init__(status_code=status.HTTP_403_FORBIDDEN, detail=detail)

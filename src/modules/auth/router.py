@@ -1,7 +1,12 @@
-from fastapi import APIRouter
+from typing import Annotated
+
+from fastapi import APIRouter, Depends
+from fastapi.security import OAuth2PasswordRequestForm
 
 from .dependencies import AuthServiceDep
 from .openapi import (
+    INVALID_CREDENTIALS_RESPONSE,
+    NOT_ACTIVATED_RESPONSE,
     UNAUTHORIZED_RESPONSE,
     USER_ALREADY_ACTIVATED_OR_NOT_FOUND_RESPONSE,
     USER_ALREADY_EXISTS_RESPONSE,
@@ -20,8 +25,20 @@ async def register_user(
     data: RegisterUser,
     auth_service: AuthServiceDep,
 ):
-    user = await auth_service.register_user(data.email, data.password)
-    return user
+    return await auth_service.register_user(data.email, data.password)
+
+
+@router.post(
+    "/login",
+    response_model=Token,
+    responses={**INVALID_CREDENTIALS_RESPONSE, **NOT_ACTIVATED_RESPONSE},
+)
+async def login(
+    form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
+    auth_service: AuthServiceDep,
+) -> Token:
+    token = await auth_service.login(form_data.username, form_data.password)
+    return Token(access_token=token, token_type="bearer")
 
 
 @router.get(

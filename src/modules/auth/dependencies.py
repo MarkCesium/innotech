@@ -11,7 +11,7 @@ from src.modules.users.dependencies import UserServiceDep
 from .security import decode_token
 from .service import AuthService
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
 
 
 def get_current_user_id(
