@@ -1,6 +1,7 @@
 from contextlib import asynccontextmanager
 
 from fastapi import APIRouter, FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 from src.core.config import get_settings
@@ -36,7 +37,15 @@ async def lifespan(app: FastAPI):
     await engine.dispose()
 
 
+settings = get_settings()
+
 app = FastAPI(lifespan=lifespan)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.app.allowed_origins,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 router = APIRouter(prefix="/api")
 
 router.include_router(auth_router)
