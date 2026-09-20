@@ -22,10 +22,9 @@ async def create_user(session: AsyncSession, email: str, hashed_password: str) -
     try:
         await session.flush()
     except IntegrityError as e:
-        if "unique constraint" in str(e).lower():
+        if getattr(e.orig, "sqlstate", None) == "23505":
             raise UserAlreadyExistsError() from e
         raise
-    # await session.refresh(user)
     return user
 
 
