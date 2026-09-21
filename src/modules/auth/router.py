@@ -2,6 +2,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends
 from fastapi.security import OAuth2PasswordRequestForm
+from starlette import status
 
 from src.core.dependencies import UoWDep
 
@@ -20,21 +21,20 @@ router = APIRouter(prefix="/auth")
 
 @router.post(
     "/register",
-    response_model=ReadUser,
+    status_code=status.HTTP_201_CREATED,
     responses={**USER_ALREADY_EXISTS_RESPONSE},
 )
 async def register_user(
     data: RegisterUser,
     uow: UoWDep,
     auth_service: AuthServiceDep,
-):
+) -> ReadUser:
     async with uow:
         return await auth_service.register_user(data.email, data.password)
 
 
 @router.post(
     "/login",
-    response_model=Token,
     responses={**INVALID_CREDENTIALS_RESPONSE, **NOT_ACTIVATED_RESPONSE},
 )
 async def login(
