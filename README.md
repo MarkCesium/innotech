@@ -8,7 +8,7 @@
 
 ```bash
 cp .env.template .env # как минимум заменить JWT__SECRET
-docker compose up --build
+docker compose -f docker-compose.yaml -f docker-compose.prod.yaml up --build
 ```
 
 Миграции накатывает сервис `migrator` перед стартом приложения
