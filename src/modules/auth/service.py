@@ -9,19 +9,27 @@ from .security import create_access_token, create_verification_token, decode_tok
 
 
 class EmailSender(Protocol):
-    def send_verification(self, email: str, token: str) -> None: ...
+    def send_verification(self, email: str, link: str) -> None: ...
 
 
 class AuthService:
-    def __init__(self, user_service: UserService, jwt_config: JWTConfig, email_sender: EmailSender):
+    def __init__(
+        self,
+        user_service: UserService,
+        jwt_config: JWTConfig,
+        base_url: str,
+        email_sender: EmailSender,
+    ):
         self.users = user_service
         self.jwt_config = jwt_config
+        self.base_url = base_url.rstrip("/")
         self.email_sender = email_sender
 
     async def register_user(self, email: str, password: str) -> ReadUser:
         user = await self.users.create_user(email, password)
         token = create_verification_token(user.id.hex, self.jwt_config)
-        self.email_sender.send_verification(email, token)
+        link = f"{self.base_url}/api/auth/verify-email?token={token}"
+        self.email_sender.send_verification(email, link)
         return ReadUser.model_validate(user)
 
     async def login(self, email: str, password: str) -> str:

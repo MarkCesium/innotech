@@ -26,8 +26,8 @@ def get_auth_service(
     settings: SettingsDep,
     bg_tasks: BackgroundTasks,
 ) -> AuthService:
-    email_sender = FastAPIEmailSender(bg_tasks, settings.app, settings.smtp)
-    return AuthService(user_service, settings.jwt, email_sender)
+    email_sender = FastAPIEmailSender(bg_tasks, settings.smtp)
+    return AuthService(user_service, settings.jwt, settings.app.base_url, email_sender)
 
 
 AuthenticatedUserID = Annotated[UUID, Depends(get_current_user_id)]
