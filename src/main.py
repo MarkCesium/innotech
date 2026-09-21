@@ -31,10 +31,10 @@ async def lifespan(app: FastAPI):
     )
 
     app.state.async_session_factory = async_session_factory
-
-    yield
-
-    await engine.dispose()
+    try:
+        yield
+    finally:
+        await engine.dispose()
 
 
 settings = get_settings()
